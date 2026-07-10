@@ -6,9 +6,12 @@ This project is a mock test analyzer for the SSC CGL examination. It provides an
 - **Dashboard:** Overview of test history, overall subject performance, and an interactive **Topic Progress Tracker** to plot your accuracy across specific topics over time.
 - **Test Interface:** A seamless interface for taking SSC CGL mock tests or topic-wise quizzes with a responsive question palette.
 - **Analysis:** Detailed post-test analysis with solutions and Question IDs for easy tracking.
-- **Manage Questions:** A dedicated admin interface to view, search, edit, and delete questions from the question bank.
+- **Full Question Papers:** 
+  - **Upload:** Admin interface for uploading full past papers. Supports direct structured Excel/CSV uploads OR native split-screen PDF uploads alongside a CSV Answer Key for grading.
+  - **Exam Interface:** Strict testing environment with a split-screen PDF viewer or CBT view. Features sectional timing (auto-locking every 15 minutes), a "Skip Section" fast-forward button, and aggressive protections against accidental browser navigation exits.
+  - **Paper Dashboard:** Track historical attempt numbers, raw score progressions, and subject-wise accuracy on full tests.
+- **Manage Questions:** A dedicated admin interface to view, search, edit, and delete individual questions from the topic-wise question bank.
 - **Settings:** Admin tools to clear mock test history without deleting the core question bank.
-- **Upload:** Admin interface for uploading new questions via CSV or Excel (`.xlsx`) files.
 
 ## Tech Stack
 - **Frontend:** React, Vite, TailwindCSS

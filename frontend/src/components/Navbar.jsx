@@ -18,6 +18,15 @@ const Navbar = () => {
           <NavLink to="/manage-questions" className={({isActive}) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-ssc-primary dark:bg-blue-900/30' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
             Manage Qs
           </NavLink>
+          <NavLink to="/papers/upload" className={({isActive}) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-ssc-primary dark:bg-blue-900/30' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
+            Upload Paper
+          </NavLink>
+          <NavLink to="/papers" className={({isActive}) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-ssc-primary dark:bg-blue-900/30' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
+            Full Papers
+          </NavLink>
+          <NavLink to="/papers/dashboard" className={({isActive}) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-ssc-primary dark:bg-blue-900/30' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
+            Paper Analytics
+          </NavLink>
           <NavLink to="/settings" className={({isActive}) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-ssc-primary dark:bg-blue-900/30' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
             Settings
           </NavLink>

@@ -8,11 +8,15 @@ import Analysis from './pages/Analysis';
 import History from './pages/History';
 import ManageQuestions from './pages/ManageQuestions';
 import Settings from './pages/Settings';
+import PaperUpload from './pages/PaperUpload';
+import PaperList from './pages/PaperList';
+import PaperExam from './pages/PaperExam';
+import PaperDashboard from './pages/PaperDashboard';
 import './index.css';
 
 const AppContent = () => {
   const location = useLocation();
-  const isTestRoute = location.pathname.startsWith('/test');
+  const isTestRoute = location.pathname.startsWith('/test') || location.pathname.startsWith('/papers/exam');
 
   return (
     <div className="min-h-screen bg-ssc-light dark:bg-ssc-dark dark:text-white transition-colors duration-200">
@@ -27,6 +31,12 @@ const AppContent = () => {
           <Route path="/history" element={<History />} />
           <Route path="/manage-questions" element={<ManageQuestions />} />
           <Route path="/settings" element={<Settings />} />
+          
+          {/* Paper Routes */}
+          <Route path="/papers/upload" element={<PaperUpload />} />
+          <Route path="/papers" element={<PaperList />} />
+          <Route path="/papers/exam/:id" element={<PaperExam />} />
+          <Route path="/papers/dashboard" element={<PaperDashboard />} />
         </Routes>
       </main>
     </div>
