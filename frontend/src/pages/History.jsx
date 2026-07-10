@@ -50,7 +50,16 @@ const History = () => {
                   #{history.length - idx}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 dark:text-gray-200">Mock Test</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-800 dark:text-gray-200">
+                      {test.TestType === 'Topic Quiz' ? 'Topic Quiz' : 'Mock Test'}
+                    </h3>
+                    {test.TopicName && (
+                      <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 rounded-full">
+                        {test.TopicName}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {new Date(test.Date).toLocaleDateString()} at {new Date(test.Date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </p>

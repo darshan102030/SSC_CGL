@@ -9,6 +9,8 @@ const CreateTest = () => {
   const [subject, setSubject] = useState('All');
   const [availableYears, setAvailableYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState('Any');
+  const [availableTopics, setAvailableTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState('Any');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,6 +29,21 @@ const CreateTest = () => {
     fetchYears();
   }, []);
 
+  useEffect(() => {
+    const fetchTopics = async () => {
+      if (testType === 'Topic Quiz' && subject !== 'All') {
+        try {
+          const response = await api.get('/questions/topics', { params: { subject } });
+          setAvailableTopics(response.data);
+          setSelectedTopic('Any');
+        } catch (err) {
+          console.error('Failed to fetch topics', err);
+        }
+      }
+    };
+    fetchTopics();
+  }, [subject, testType]);
+
   const handleTestTypeChange = (type) => {
     setTestType(type);
     if (type === 'Full') {
@@ -35,6 +52,9 @@ const CreateTest = () => {
     } else if (type === 'Subject-wise') {
       setQuestionCount(25);
       setSubject('Quant'); // Default
+    } else if (type === 'Topic Quiz') {
+      setQuestionCount(10);
+      setSubject('Quant');
     }
   };
 
@@ -44,8 +64,9 @@ const CreateTest = () => {
     setError('');
 
     try {
+      const topicParam = (testType === 'Topic Quiz' && selectedTopic !== 'Any') ? selectedTopic : undefined;
       const response = await api.get('/questions/random', {
-        params: { count: questionCount, subject, year: selectedYear }
+        params: { count: questionCount, subject, year: selectedYear, topic: topicParam }
       });
 
       if (response.data.length === 0) {
@@ -57,7 +78,10 @@ const CreateTest = () => {
       // Calculate duration: standard SSC CGL is 100 Qs in 60 mins. Let's make it proportional or configurable.
       const duration = testType === 'Full' ? 60 : Math.ceil(questionCount * 0.6); 
 
-      startTest(response.data, duration);
+      startTest(response.data, duration, {
+        testType: testType === 'Topic Quiz' ? 'Topic Quiz' : 'Mock',
+        topicName: topicParam || null
+      });
       navigate('/test'); // Navigate to the test interface
     } catch (err) {
       setError('Failed to fetch questions. Please ensure the backend is running.');
@@ -75,8 +99,8 @@ const CreateTest = () => {
           {/* Test Type Selection */}
           <div>
             <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Select Test Type</label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {['Full', 'Subject-wise', 'Custom'].map((type) => (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {['Full', 'Subject-wise', 'Topic Quiz', 'Custom'].map((type) => (
                 <div
                   key={type}
                   onClick={() => handleTestTypeChange(type)}
@@ -90,6 +114,7 @@ const CreateTest = () => {
                   <p className="text-xs text-center mt-1 opacity-80">
                     {type === 'Full' && '100 Questions, All Subjects'}
                     {type === 'Subject-wise' && 'Single Subject Focus'}
+                    {type === 'Topic Quiz' && 'Specific Topic Focus'}
                     {type === 'Custom' && 'Choose specific parameters'}
                   </p>
                 </div>
@@ -143,6 +168,23 @@ const CreateTest = () => {
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-ssc-primary disabled:opacity-50"
               />
             </div>
+            
+            {/* Topic Selection */}
+            {testType === 'Topic Quiz' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topic</label>
+                <select
+                  value={selectedTopic}
+                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-ssc-primary"
+                >
+                  <option value="Any">Any Topic / Mixed</option>
+                  {availableTopics.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {error && (

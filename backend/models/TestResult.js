@@ -5,6 +5,15 @@ const testResultSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  TestType: {
+    type: String,
+    enum: ['Mock', 'Topic Quiz'],
+    default: 'Mock'
+  },
+  TopicName: {
+    type: String,
+    default: null
+  },
   TotalQuestions: {
     type: Number,
     required: true
@@ -39,6 +48,15 @@ const testResultSchema = new mongoose.Schema({
   },
   SubjectAnalysis: [{
     Subject: String,
+    Correct: Number,
+    Wrong: Number,
+    Unattempted: Number,
+    Total: Number,
+    Accuracy: Number
+  }],
+  TopicAnalysis: [{
+    Subject: String,
+    Topic: String,
     Correct: Number,
     Wrong: Number,
     Unattempted: Number,

@@ -203,6 +203,7 @@ const Analysis = () => {
                   <div className="flex gap-2 mb-2">
                     <span className="text-xs font-bold px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">Q {idx + 1}</span>
                     <span className="text-xs font-bold px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">{qr.Question.Subject}</span>
+                    <span className="text-xs font-mono px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500">ID: {qr.Question.QuestionID}</span>
                   </div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium whitespace-pre-wrap mb-4">
                     {qr.Question.Question}

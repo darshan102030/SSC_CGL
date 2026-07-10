@@ -20,6 +20,7 @@ export const TestProvider = ({ children }) => {
   
   const [isTestActive, setIsTestActive] = useState(false);
   const [testResult, setTestResult] = useState(null);
+  const [testContext, setTestContext] = useState({});
   
   const navigate = useNavigate();
 
@@ -42,9 +43,10 @@ export const TestProvider = ({ children }) => {
     return () => clearInterval(timer);
   }, [isTestActive, timeLeft]);
 
-  const startTest = (fetchedQuestions, durationMinutes) => {
+  const startTest = (fetchedQuestions, durationMinutes, context = {}) => {
     setQuestions(fetchedQuestions);
     setResponses({});
+    setTestContext(context);
     
     // Determine sections preserving the order they appear in the fetched array
     const uniqueSubjects = [];
@@ -107,36 +109,40 @@ export const TestProvider = ({ children }) => {
     setQuestionStatus(prev => ({ ...prev, [questionId]: status }));
   };
 
-  const navigateToQuestion = (index) => {
+  const navigateToQuestion = (index, skipStatusUpdate = false) => {
     if (index >= 0 && index < currentSectionQuestions.length) {
       const currentQId = currentSectionQuestions[currentIndex]._id;
       
-      // If navigating away, update current question status based on whether it has an answer
-      // ONLY IF it's not currently marked for review. If it's marked, preserve the marked state.
-      const currStatus = questionStatus[currentQId];
-      if (currStatus === 'notVisited' || currStatus === 'visited') {
-         if (responses[currentQId]) {
-           updateStatus(currentQId, 'answered');
-         } else {
-           updateStatus(currentQId, 'visited');
-         }
-      } else if (currStatus === 'marked') {
-         if (responses[currentQId]) {
-           updateStatus(currentQId, 'answeredMarked');
-         }
-      } else if (currStatus === 'answeredMarked') {
-         if (!responses[currentQId]) {
-           updateStatus(currentQId, 'marked');
-         }
+      if (!skipStatusUpdate) {
+        // If navigating away by clicking grid, update current question status based on answer
+        const currStatus = questionStatus[currentQId];
+        if (currStatus === 'notVisited' || currStatus === 'visited') {
+           if (responses[currentQId]) {
+             updateStatus(currentQId, 'answered');
+           } else {
+             updateStatus(currentQId, 'visited');
+           }
+        } else if (currStatus === 'marked') {
+           if (responses[currentQId]) {
+             updateStatus(currentQId, 'answeredMarked');
+           }
+        } else if (currStatus === 'answeredMarked') {
+           if (!responses[currentQId]) {
+             updateStatus(currentQId, 'marked');
+           }
+        }
       }
 
       setCurrentIndex(index);
       
       // The new question becomes visited if it was notVisited
       const newQId = currentSectionQuestions[index]._id;
-      if (questionStatus[newQId] === 'notVisited') {
-        updateStatus(newQId, 'visited');
-      }
+      setQuestionStatus(prev => {
+        if (prev[newQId] === 'notVisited') {
+           return { ...prev, [newQId]: 'visited' };
+        }
+        return prev;
+      });
     }
   };
 
@@ -149,7 +155,7 @@ export const TestProvider = ({ children }) => {
     }
     
     if (currentIndex < currentSectionQuestions.length - 1) {
-      navigateToQuestion(currentIndex + 1);
+      navigateToQuestion(currentIndex + 1, true);
     }
   };
 
@@ -162,7 +168,7 @@ export const TestProvider = ({ children }) => {
     }
     
     if (currentIndex < currentSectionQuestions.length - 1) {
-      navigateToQuestion(currentIndex + 1);
+      navigateToQuestion(currentIndex + 1, true);
     }
   };
 
@@ -182,7 +188,9 @@ export const TestProvider = ({ children }) => {
     try {
       const payload = {
         questions: questions,
-        responses: responses
+        responses: responses,
+        testType: testContext.testType,
+        topicName: testContext.topicName
       };
       const res = await api.post('/tests/submit', payload);
       setTestResult(res.data);

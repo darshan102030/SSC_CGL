@@ -45,8 +45,8 @@ const TestInterface = () => {
     switch(status) {
       case 'answered': return 'bg-palette-answered text-white border-transparent';
       case 'visited': return 'bg-palette-visited text-white border-transparent';
-      case 'marked': return 'bg-palette-marked text-white border-transparent';
-      case 'answeredMarked': return 'bg-palette-answeredMarked text-white border-transparent relative after:content-[""] after:absolute after:bottom-0 after:right-0 after:w-2 after:h-2 after:bg-green-400 after:rounded-full';
+      case 'marked': return 'bg-purple-500 text-white border-transparent'; // Fixed bug here: hardcoded tailwind color instead of custom palette to ensure it renders correctly
+      case 'answeredMarked': return 'bg-blue-500 text-white border-transparent relative after:content-[""] after:absolute after:bottom-0 after:right-0 after:w-2 after:h-2 after:bg-green-400 after:rounded-full';
       default: return 'bg-white text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600';
     }
   };
@@ -81,7 +81,7 @@ const TestInterface = () => {
         {/* Left Section - Question */}
         <div className="flex-1 flex flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-ssc-dark overflow-y-auto">
           <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400">
-            <span>Section: {sections[currentSectionIndex]} | Question {currentIndex + 1} of {currentSectionQuestions.length}</span>
+            <span>Section: {sections[currentSectionIndex]} | Question {currentIndex + 1} of {currentSectionQuestions.length} <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs border border-gray-200 dark:border-gray-700">ID: {currentQ.QuestionID}</span></span>
             <span className="flex items-center gap-1 text-red-500"><AlertCircle className="w-4 h-4"/> 0.50 Negative Marks</span>
           </div>
           
@@ -161,8 +161,8 @@ const TestInterface = () => {
             <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-palette-answered text-white">{stats.answered}</span> Answered</div>
             <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-palette-visited text-white">{stats.visited}</span> Not Answered</div>
             <div className="flex items-center gap-2"><span className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300">{stats.notVisited}</span> Not Visited</div>
-            <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-palette-marked text-white">{stats.marked}</span> Marked for Review</div>
-            <div className="flex items-center gap-2 col-span-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-palette-answeredMarked text-white relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-1.5 after:h-1.5 after:bg-green-400 after:rounded-full">{stats.answeredMarked}</span> Answered & Marked for Review</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500 text-white">{stats.marked}</span> Marked for Review</div>
+            <div className="flex items-center gap-2 col-span-2"><span className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-500 text-white relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-1.5 after:h-1.5 after:bg-green-400 after:rounded-full">{stats.answeredMarked}</span> Answered & Marked for Review</div>
           </div>
 
           {/* Sections Tabs Mock */}

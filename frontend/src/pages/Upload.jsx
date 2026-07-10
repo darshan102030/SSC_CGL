@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import api from '../services/api';
-import { UploadCloud, CheckCircle, AlertCircle } from 'lucide-react';
+import { UploadCloud, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const Upload = () => {
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -63,13 +64,13 @@ const Upload = () => {
         <form onSubmit={handleUpload} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Excel File (.xlsx)
+              Question Bank File (.xlsx, .csv)
             </label>
-            <p className="text-xs text-gray-500 mb-2">Required columns: QuestionID, Subject, Year, Question, OptionA, OptionB, OptionC, OptionD, CorrectAnswer</p>
+            <p className="text-xs text-gray-500 mb-2">Required columns: QuestionID, Subject, Year, Question, OptionA, OptionB, OptionC, OptionD, CorrectAnswer. <strong>Optional: Topic</strong></p>
             <input
               id="file-upload"
               type="file"
-              accept=".xlsx, .xls"
+              accept=".xlsx, .xls, .csv"
               onChange={handleFileChange}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-ssc-primary focus:border-ssc-primary bg-gray-50 dark:bg-gray-900 dark:text-white"
             />
@@ -79,13 +80,22 @@ const Upload = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Admin Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-ssc-primary focus:border-ssc-primary bg-gray-50 dark:bg-gray-900 dark:text-white"
-              placeholder="Enter admin password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 pr-12 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-ssc-primary focus:border-ssc-primary bg-gray-50 dark:bg-gray-900 dark:text-white"
+                placeholder="Enter admin password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
           <button

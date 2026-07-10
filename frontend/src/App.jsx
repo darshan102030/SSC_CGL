@@ -6,6 +6,8 @@ import CreateTest from './pages/CreateTest';
 import TestInterface from './pages/TestInterface';
 import Analysis from './pages/Analysis';
 import History from './pages/History';
+import ManageQuestions from './pages/ManageQuestions';
+import Settings from './pages/Settings';
 import './index.css';
 
 const AppContent = () => {
@@ -23,6 +25,8 @@ const AppContent = () => {
           <Route path="/test" element={<TestInterface />} />
           <Route path="/analysis/:id" element={<Analysis />} />
           <Route path="/history" element={<History />} />
+          <Route path="/manage-questions" element={<ManageQuestions />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
     </div>

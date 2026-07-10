@@ -11,6 +11,10 @@ const questionSchema = new mongoose.Schema({
     required: true,
     enum: ['Quant', 'Reasoning', 'English', 'General Awareness']
   },
+  Topic: {
+    type: String,
+    default: null
+  },
   Year: {
     type: String,
     required: true

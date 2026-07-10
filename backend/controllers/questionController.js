@@ -48,7 +48,8 @@ const uploadQuestions = async (req, res) => {
           OptionB: String(row.OptionB),
           OptionC: String(row.OptionC),
           OptionD: String(row.OptionD),
-          CorrectAnswer: row.CorrectAnswer
+          CorrectAnswer: row.CorrectAnswer,
+          Topic: row.Topic ? String(row.Topic) : null
         });
         addedCount++;
       } else {
@@ -64,7 +65,7 @@ const uploadQuestions = async (req, res) => {
 
   } catch (error) {
     console.error('Error uploading questions:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 };
 
@@ -73,12 +74,15 @@ const uploadQuestions = async (req, res) => {
 // @access  Public
 const getRandomQuestions = async (req, res) => {
   try {
-    const { count = 100, subject, year } = req.query;
+    const { count = 100, subject, year, topic } = req.query;
     let questions = [];
 
     const baseMatch = {};
     if (year && year !== 'Any') {
       baseMatch.Year = year;
+    }
+    if (topic) {
+      baseMatch.Topic = topic;
     }
 
     if (subject === 'All') {
@@ -122,4 +126,118 @@ const getAvailableYears = async (req, res) => {
   }
 };
 
-module.exports = { uploadQuestions, getRandomQuestions, getAvailableYears };
+// @desc    Get available topics for a subject
+// @route   GET /api/questions/topics
+// @access  Public
+const getAvailableTopics = async (req, res) => {
+  try {
+    const { subject } = req.query;
+    const match = subject ? { Subject: subject } : {};
+    const topics = await Question.distinct('Topic', match);
+    res.status(200).json(topics.filter(t => t).sort());
+  } catch (error) {
+    console.error('Error fetching topics:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Get all questions (paginated)
+// @route   GET /api/questions
+// @access  Public
+const getAllQuestions = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const search = req.query.search || '';
+    
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { QuestionID: { $regex: search, $options: 'i' } },
+          { Question: { $regex: search, $options: 'i' } },
+          { Subject: { $regex: search, $options: 'i' } },
+          { Topic: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    const total = await Question.countDocuments(query);
+    const questions = await Question.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      questions,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      totalQuestions: total
+    });
+  } catch (error) {
+    console.error('Error fetching all questions:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Update a question
+// @route   PUT /api/questions/:id
+// @access  Public (protected by password in body)
+const updateQuestion = async (req, res) => {
+  try {
+    const { password, ...updateData } = req.body;
+    if (password !== 'admin123') {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Do not allow updating QuestionID
+    delete updateData.QuestionID;
+
+    const question = await Question.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    res.status(200).json(question);
+  } catch (error) {
+    console.error('Error updating question:', error);
+    res.status(500).json({ message: error.message || 'Server error' });
+  }
+};
+
+// @desc    Delete a question
+// @route   DELETE /api/questions/:id
+// @access  Public (protected by password in body/query)
+const deleteQuestion = async (req, res) => {
+  try {
+    const password = req.body.password || req.query.password;
+    if (password !== 'admin123') {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const question = await Question.findByIdAndDelete(req.params.id);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    res.status(200).json({ message: 'Question deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting question:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { 
+  uploadQuestions, 
+  getRandomQuestions, 
+  getAvailableYears, 
+  getAvailableTopics,
+  getAllQuestions,
+  updateQuestion,
+  deleteQuestion
+};
